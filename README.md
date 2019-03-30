@@ -1,4 +1,5 @@
-# Tomato timer built in rust designed to run in the command line
+# CLI Tomato timer
+## built in rust
 [![Build Status](https://travis-ci.org/louisdewar/tomato.svg?branch=master)](https://travis-ci.org/louisdewar/tomato)
 
 ## WIP: No where near polished!
@@ -14,6 +15,20 @@ It is currently possible to customise *some* settings although this is minimal. 
 
 Then: `cargo run --release`
 
+## Commands (WIP)
+
+This list may be incomplete, out of date or otherwise invalid.
+
+`q` -> quit
+
+`p` -> pause
+
+`→` (right arrow) -> Skip to next state
+
+`←` (left arrow) -> Revert either to start of current state or previous state (if already ~at start of current state)
+
+`l` -> If on short break, it becomes a long break
+
 ## Testing
 
-Currently there are no unit tests, since it is difficult to test timing. Rust allows a certain trust that if the code compiles it will mostly work. The code is also tested with `cargo clippy`, also travis will check the code is formatted according to rust format (it runs `cargo clippy`)
+Currently there are no unit tests, since it is difficult to test timing. Rust allows a certain trust that if the code compiles it will mostly work. The code is also tested with `cargo clippy`, also travis will check the code is formatted according to rust format (it runs `cargo fmt`)
