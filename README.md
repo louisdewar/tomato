@@ -1,4 +1,5 @@
-# Tomato timer built in rust designed to run in the command line
+# Tomato timer built in rust designed to run in the command line 
+[![Build Status](https://travis-ci.org/louisdewar/tomato.svg?branch=master)](https://travis-ci.org/louisdewar/tomato)
 
 ## WIP: No where near polished!
 
