@@ -40,13 +40,22 @@ impl Timer {
     }
 
     pub fn pause(&mut self) {
-        assert!(!self.is_paused, "Tried to pause a timer that was already paused");
+        assert!(
+            !self.is_paused,
+            "Tried to pause a timer that was already paused"
+        );
         self.is_paused = true;
-        self.acc_duration += self.last_start.elapsed().expect("SystemTime::elapsed failed");
+        self.acc_duration += self
+            .last_start
+            .elapsed()
+            .expect("SystemTime::elapsed failed");
     }
 
     pub fn start(&mut self) {
-        assert!(self.is_paused, "Tried to start a timer that was already running");
+        assert!(
+            self.is_paused,
+            "Tried to start a timer that was already running"
+        );
 
         self.last_start = SystemTime::now();
         self.is_paused = false;
@@ -56,7 +65,11 @@ impl Timer {
         if self.is_paused {
             State::Paused
         } else {
-            let total_duration = self.acc_duration + self.last_start.elapsed().expect("SystemTime::elapsed failed");
+            let total_duration = self.acc_duration
+                + self
+                    .last_start
+                    .elapsed()
+                    .expect("SystemTime::elapsed failed");
 
             if total_duration < self.target_duration {
                 State::Running(

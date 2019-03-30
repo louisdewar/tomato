@@ -1,9 +1,13 @@
 use std::io;
 
-use tui::{Terminal, backend::{ TermionBackend }};
 use tui::layout::Rect;
+use tui::{backend::TermionBackend, Terminal};
 
-use termion::{screen::AlternateScreen, input::MouseTerminal, raw::{IntoRawMode, RawTerminal}};
+use termion::{
+    input::MouseTerminal,
+    raw::{IntoRawMode, RawTerminal},
+    screen::AlternateScreen,
+};
 
 use crate::app::App;
 
@@ -12,7 +16,7 @@ pub type BackendType = TermionBackend<AlternateScreen<MouseTerminal<RawTerminal<
 
 pub struct Ui {
     terminal: Terminal<BackendType>,
-    last_size: Rect
+    last_size: Rect,
 }
 
 impl Ui {
@@ -31,7 +35,7 @@ impl Ui {
 
         Ok(Ui {
             terminal,
-            last_size
+            last_size,
         })
     }
 
@@ -44,9 +48,9 @@ impl Ui {
         }
 
         self.terminal.draw(|mut f| {
-            use tui::layout::{Layout, Direction, Constraint };
+            use tui::layout::{Constraint, Direction, Layout};
+            use tui::style::{Color, Style};
             use tui::widgets::{Block, Borders, Gauge, Widget};
-            use tui::style::{ Style, Color };
 
             let chunks = Layout::default()
                 .direction(Direction::Vertical)

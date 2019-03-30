@@ -16,7 +16,9 @@ impl Config {
         }
     }
 
-    pub fn new_from_config_file<P: std::convert::AsRef<std::path::Path>>(path: P) -> std::io::Result<Config> {
+    pub fn new_from_config_file<P: std::convert::AsRef<std::path::Path>>(
+        path: P,
+    ) -> std::io::Result<Config> {
         use std::fs;
         let s = fs::read_to_string(path)?;
 
@@ -36,14 +38,20 @@ impl Config {
 
                 // TODO: Come up with error strategy (maybe callback)
                 if parts.len() != 2 {
-                    println!("Invalid format on line - too many sections - (skipping) {}: \"{}\"", i, line);
+                    println!(
+                        "Invalid format on line - too many sections - (skipping) {}: \"{}\"",
+                        i, line
+                    );
                     break;
                 }
 
                 let key = parts[0].trim();
 
                 if key == "" {
-                    println!("Invalid format on line - no key - (skipping) {}: \"{}\"", i, line);
+                    println!(
+                        "Invalid format on line - no key - (skipping) {}: \"{}\"",
+                        i, line
+                    );
                     break;
                 }
 

@@ -1,4 +1,4 @@
-# Tomato timer built in rust designed to run in the command line 
+# Tomato timer built in rust designed to run in the command line
 [![Build Status](https://travis-ci.org/louisdewar/tomato.svg?branch=master)](https://travis-ci.org/louisdewar/tomato)
 
 ## WIP: No where near polished!
@@ -11,8 +11,9 @@ It is currently possible to customise *some* settings although this is minimal. 
 ## Running
 
 [Install rust](https://rustup.rs/).
-`cargo run --release`
+
+Then: `cargo run --release`
 
 ## Testing
 
-Currently there are no unit tests, since it is difficult to test timing. Rust allows a certain trust that if the code compiles it will mostly work. The code is also tested with `cargo clippy`.
+Currently there are no unit tests, since it is difficult to test timing. Rust allows a certain trust that if the code compiles it will mostly work. The code is also tested with `cargo clippy`, also travis will check the code is formatted according to rust format (it runs `cargo clippy`)
