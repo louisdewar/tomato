@@ -1,0 +1,9 @@
+language: rust
+rust:
+  - stable
+before_script:
+  - rustup component add clippy
+script:
+  - cargo clippy -- -D warnings
+  # This is probably not required since clippy will fail if the build fails to compile
+  - cargo build
