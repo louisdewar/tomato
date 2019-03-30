@@ -1,7 +1,7 @@
 mod timer;
-use crate::config::Config;
 use self::timer::{State, Timer};
-use std::time::{ Duration, SystemTime };
+use crate::config::Config;
+use std::time::{Duration, SystemTime};
 
 // 25 mins
 const DEFAULT_WORK_TIME: u64 = 60 * 25;
@@ -39,15 +39,27 @@ pub enum AppState {
 impl App {
     pub fn new(config: &Config) -> App {
         let settings = AppSettings {
-            work_time: config.get_int("work_time").map(|x| x as u64).unwrap_or(DEFAULT_WORK_TIME),
-            short_break_time: config.get_int("short_break_time").map(|x| x as u64).unwrap_or(DEFAULT_SHORT_BREAK_TIME),
-            long_break_time: config.get_int("long_break_time").map(|x| x as u64).unwrap_or(DEFAULT_LONG_BREAK_TIME),
-            pomodoros_before_long_break: config.get_int("pomodoros_before_long_break").map(|x| x as u64).unwrap_or(DEFAULT_POMODOROS_BEFORE_LONG_BREAK),
+            work_time: config
+                .get_int("work_time")
+                .map(|x| x as u64)
+                .unwrap_or(DEFAULT_WORK_TIME),
+            short_break_time: config
+                .get_int("short_break_time")
+                .map(|x| x as u64)
+                .unwrap_or(DEFAULT_SHORT_BREAK_TIME),
+            long_break_time: config
+                .get_int("long_break_time")
+                .map(|x| x as u64)
+                .unwrap_or(DEFAULT_LONG_BREAK_TIME),
+            pomodoros_before_long_break: config
+                .get_int("pomodoros_before_long_break")
+                .map(|x| x as u64)
+                .unwrap_or(DEFAULT_POMODOROS_BEFORE_LONG_BREAK),
         };
 
         App {
             state: AppState::Work,
-            timer: Timer::new(Duration::from_secs(settings.work_time), true),
+            timer: Timer::new(Duration::from_secs(settings.work_time), false),
             progress: 0.0,
             time_left: (0, 0),
             time_elapsed: (0, 0),
@@ -79,7 +91,13 @@ impl App {
 
     pub fn get_state_name(&self) -> &'static str {
         match self.state {
-            AppState::LongBreak(elongated) => if elongated { "Long Break (elongated)" } else { "Long Break" },
+            AppState::LongBreak(elongated) => {
+                if elongated {
+                    "Long Break (elongated)"
+                } else {
+                    "Long Break"
+                }
+            }
             AppState::ShortBreak => "Short Break",
             AppState::Work => "Work",
         }
@@ -138,7 +156,11 @@ impl App {
             AppState::Work => self.settings.work_time,
         };
 
-        self.timer = Timer::new_with_acc_duration(Duration::from_secs(time), false, last_finished.elapsed().expect("SystemTime::elapsed failed"));
+        self.timer = Timer::new_with_acc_duration(
+            Duration::from_secs(time),
+            false,
+            last_finished.elapsed().expect("SystemTime::elapsed failed"),
+        );
         self.state = next_state;
     }
 
@@ -154,7 +176,10 @@ impl App {
         &self.state
     }
 
-    pub fn update<F>(&mut self, on_new_state: &F) where F: Fn(&AppState) -> () {
+    pub fn update<F>(&mut self, on_new_state: &F)
+    where
+        F: Fn(&AppState) -> (),
+    {
         match self.timer.get_state() {
             State::Paused => self.timer.is_paused = true,
             State::Running(progress, time_elapsed, time_left) => {
@@ -165,7 +190,7 @@ impl App {
 
                 let seconds_left = time_left.as_secs();
                 self.time_left = (seconds_left / 60, seconds_left % 60);
-            },
+            }
             State::Finished(last_finished) => {
                 // All timing is state based so by using the last_finished & the recursive
                 // calling of update, any lag won't cause issues with the correctness of the timer

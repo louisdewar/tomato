@@ -1,5 +1,4 @@
 /// Copied from tui-rs/examples/util/event
-
 use std::io;
 use std::sync::mpsc;
 use std::thread;
