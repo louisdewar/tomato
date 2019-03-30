@@ -47,7 +47,7 @@ impl App {
 
         App {
             state: AppState::Work,
-            timer: Timer::new(Duration::from_secs(settings.work_time), true),
+            timer: Timer::new(Duration::from_secs(settings.work_time), false),
             progress: 0.0,
             time_left: (0, 0),
             time_elapsed: (0, 0),
