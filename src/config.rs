@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+// TODO: perhaps move this into a local library
+
 #[derive(Clone, Debug)]
 pub struct Config {
     ints: HashMap<String, isize>,

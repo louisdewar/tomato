@@ -1,7 +1,11 @@
+use crate::config::Config;
+
+use std::time::{Duration, SystemTime};
+use std::sync::Arc;
+
 mod timer;
 use self::timer::{State, Timer};
-use crate::config::Config;
-use std::time::{Duration, SystemTime};
+
 
 // 25 mins
 const DEFAULT_WORK_TIME: u64 = 60 * 25;
@@ -37,7 +41,7 @@ pub enum AppState {
 }
 
 impl App {
-    pub fn new(config: &Config) -> App {
+    pub fn new(config: Arc<Config>) -> App {
         let settings = AppSettings {
             work_time: config
                 .get_int("work_time")
