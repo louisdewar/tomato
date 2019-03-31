@@ -1,11 +1,10 @@
 use crate::config::Config;
 
-use std::time::{Duration, SystemTime};
 use std::sync::Arc;
+use std::time::{Duration, SystemTime};
 
 mod timer;
 use self::timer::{State, Timer};
-
 
 // 25 mins
 const DEFAULT_WORK_TIME: u64 = 60 * 25;

@@ -1,4 +1,4 @@
-use crate::{ Config, App, AppState };
+use crate::{App, AppState, Config};
 
 use termion::event::Key;
 
@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 pub struct InputManager {
     on_work_start: Option<String>,
-    on_break_start: Option<String>
+    on_break_start: Option<String>,
 }
 
 impl InputManager {
@@ -15,7 +15,10 @@ impl InputManager {
         let on_break_start = config.get_string("on_break_start").cloned();
 
         // TODO: Use config for keys
-        InputManager { on_work_start, on_break_start }
+        InputManager {
+            on_work_start,
+            on_break_start,
+        }
     }
 
     /// Handles the input and alters the app accordingly.
@@ -26,24 +29,29 @@ impl InputManager {
             Key::Char('p') => app.toggle_pause(),
             Key::Right => {
                 app.transition_to_next_state(std::time::SystemTime::now());
-                handle_next_state(app.get_state(), self.on_work_start.as_ref(), self.on_break_start.as_ref());
+                handle_next_state(
+                    app.get_state(),
+                    self.on_work_start.as_ref(),
+                    self.on_break_start.as_ref(),
+                );
             }
             Key::Left => {
                 let (minutes, seconds) = app.get_time_elapsed();
 
                 if minutes == 0 && seconds < 2 {
                     app.transition_to_prev_state(std::time::SystemTime::now());
-                    handle_next_state(app.get_state(), self.on_work_start.as_ref(), self.on_break_start.as_ref());
+                    handle_next_state(
+                        app.get_state(),
+                        self.on_work_start.as_ref(),
+                        self.on_break_start.as_ref(),
+                    );
                 } else {
                     app.reset_timer(false);
                 }
             }
             Key::Char('l') => {
                 if app.get_state() == &AppState::ShortBreak {
-                    app.transition_to_state(
-                        AppState::LongBreak(true),
-                        std::time::SystemTime::now(),
-                    )
+                    app.transition_to_state(AppState::LongBreak(true), std::time::SystemTime::now())
                 }
             }
             _ => {}
