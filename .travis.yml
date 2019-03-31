@@ -1,4 +1,9 @@
 language: rust
+
+cache:
+  directories:
+    - $HOME/.cargo/bin
+
 rust:
   - stable
 before_script:
