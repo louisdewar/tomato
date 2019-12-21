@@ -11,7 +11,6 @@ use termion::{
 
 use crate::app::App;
 
-// TODO: There has got to be a better way of doing this type signature...
 pub type BackendType = TermionBackend<AlternateScreen<MouseTerminal<RawTerminal<std::io::Stdout>>>>;
 
 pub struct Ui {

@@ -17,23 +17,37 @@ use input::InputManager;
 
 use std::sync::Arc;
 
-fn main() -> Result<(), failure::Error> {
-    // Setup event handlers
-    let events = Events::new();
+use clap::{crate_authors, crate_version, load_yaml, App as Arguments};
 
-    let config_file_path = dirs::home_dir()
-        .map(|mut home| {
-            home.push(".config/tomato_timer.conf");
-            home
-        })
-        .unwrap_or_else(|| {
-            let mut path = std::path::PathBuf::new();
-            path.push("/etc/tomato_timer/timer.conf");
-            path
-        });
+fn main() -> Result<(), failure::Error> {
+    let yaml = load_yaml!("cli.yml");
+    let matches = Arguments::from(yaml)
+        .version(crate_version!())
+        .author(crate_authors!())
+        .get_matches();
+
+    // Setup event handlers
+    let events = Events::new(250);
+
+    use std::path::PathBuf;
 
     let config = Arc::new(
-        Config::new_from_config_file(config_file_path.as_path()).unwrap_or_else(|_| Config::new()),
+        matches
+            .value_of("config")
+            .map(PathBuf::from)
+            .map(|path| Config::new_from_config_file(path).expect("Couldn't find your config file"))
+            .or_else(|| {
+                // If there wasn't a config specified try $HOME/.config/tomato_timer.conf
+                dirs::home_dir()
+                    .map(|mut home| {
+                        home.push(".config/tomato_timer.conf");
+                        home
+                    })
+                    // Silently try to get a default config file
+                    .and_then(|path| Config::new_from_config_file(path).ok())
+            })
+            // If default oconfig file couldn't be found then silently just use an empty one
+            .unwrap_or_else(Config::new),
     );
 
     let on_work_start = config.get_string("on_work_start");

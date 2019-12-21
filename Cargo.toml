@@ -1,11 +1,12 @@
 [package]
 name = "tomato"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Louis de Wardt <contact@louis.dewardt.uk>"]
 edition = "2018"
 
 [dependencies]
-tui = "0.5.0"
+tui = "0.8"
 failure = "0.1.5"
-termion = "1.5.1"
+termion = "1.5"
 dirs = "1.0.5"
+clap = { version = "2.33", features = ["yaml"] }

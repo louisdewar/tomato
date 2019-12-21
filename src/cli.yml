@@ -1,0 +1,9 @@
+name: Tomato Timer
+about: Runs a terminal UI program with a timer for the pomodoro technique
+args:
+    - config:
+        short: c
+        long: config
+        value_name: FILE
+        help: Sets a custom config file (defaults to looking at $HOME/.config/tomato_timer.conf)
+        takes_value: true

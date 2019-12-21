@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-// TODO: perhaps move this into a local library
-
 #[derive(Clone, Debug)]
 pub struct Config {
     ints: HashMap<String, isize>,
@@ -34,6 +32,12 @@ impl Config {
 
         for (i, line) in s.lines().enumerate() {
             let trim_line = line.trim_start();
+
+            // Ignore empty line
+            if trim_line == "" {
+                continue;
+            }
+
             // Ignore lines where the first non-whitespace char is `#` since that is reserved for comments
             if trim_line.get(0..1) != Some("#") {
                 let parts = trim_line.split('=').collect::<Vec<&str>>();
@@ -44,7 +48,7 @@ impl Config {
                         "Invalid format on line - too many sections - (skipping) {}: \"{}\"",
                         i, line
                     );
-                    break;
+                    continue;
                 }
 
                 let key = parts[0].trim();
@@ -54,7 +58,7 @@ impl Config {
                         "Invalid format on line - no key - (skipping) {}: \"{}\"",
                         i, line
                     );
-                    break;
+                    continue;
                 }
 
                 if let Ok(value) = parts[1].parse::<isize>() {
@@ -78,7 +82,7 @@ impl Config {
         self.ints.get(key).cloned()
     }
 
-    // Will use this at some point, keeping for consistency. Although perhaps this can be moved out of this crate?
+    // Will use this at some point, keeping for consistency
     #[allow(dead_code)]
     pub fn get_float<'a>(&'a self, key: &str) -> Option<&'a f64> {
         self.floats.get(key)
