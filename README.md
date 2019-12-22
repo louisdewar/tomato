@@ -12,7 +12,7 @@ The default is to have 25 minutes doing work then 5 minutes of break. You do thi
 
 [Install rust](https://rustup.rs/).
 
-Clone/Download this repo, then inside the direction: `cargo run --release`.
+Clone/Download this repo, then inside the directory: `cargo run --release`.
 
 To install run the command `cargo install --path ./ --force` (from within the directory), then you can type `tomato` to start the timer.
 
