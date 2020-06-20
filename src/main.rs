@@ -1,5 +1,3 @@
-#![warn(clippy::all)]
-
 mod event;
 use crate::event::{Event, Events};
 
@@ -19,7 +17,16 @@ use std::sync::Arc;
 
 use clap::{crate_authors, crate_version, load_yaml, App as Arguments};
 
+fn setup_panic_hook() {
+    std::panic::set_hook(Box::new(|info| {
+        ui::cleanup();
+        better_panic::Settings::auto().create_panic_handler()(info);
+    }));
+}
+
 fn main() -> Result<(), failure::Error> {
+    setup_panic_hook();
+
     let yaml = load_yaml!("cli.yml");
     let matches = Arguments::from(yaml)
         .version(crate_version!())
@@ -74,6 +81,8 @@ fn main() -> Result<(), failure::Error> {
             }
         }
     }
+
+    ui::cleanup();
 
     Ok(())
 }

@@ -1,6 +1,6 @@
 use crate::{App, AppState, Config};
 
-use termion::event::Key;
+use crossterm::event::KeyCode as Key;
 
 use std::sync::Arc;
 
@@ -28,7 +28,7 @@ impl InputManager {
             Key::Char('q') | Key::Esc => return false,
             Key::Char('p') => app.toggle_pause(),
             Key::Right => {
-                app.transition_to_next_state(std::time::SystemTime::now());
+                app.transition_to_next_state(std::time::Duration::new(0, 0));
                 handle_next_state(
                     app.get_state(),
                     self.on_work_start.as_ref(),
@@ -39,7 +39,7 @@ impl InputManager {
                 let (minutes, seconds) = app.get_time_elapsed();
 
                 if minutes == 0 && seconds < 2 {
-                    app.transition_to_prev_state(std::time::SystemTime::now());
+                    app.transition_to_prev_state(std::time::Duration::new(0, 0));
                     handle_next_state(
                         app.get_state(),
                         self.on_work_start.as_ref(),
@@ -51,9 +51,18 @@ impl InputManager {
             }
             Key::Char('l') => {
                 if app.get_state() == &AppState::ShortBreak {
-                    app.transition_to_state(AppState::LongBreak(true), std::time::SystemTime::now())
+                    app.transition_to_state(
+                        AppState::LongBreak(true),
+                        std::time::Duration::new(0, 0),
+                    )
                 }
             }
+            Key::Char('-') => app.rewind_timer(1),
+            Key::Char('=') => app.forward_timer(1),
+            Key::Char('[') => app.rewind_timer(5),
+            Key::Char(']') => app.forward_timer(5),
+            Key::Char(',') => app.rewind_timer(60),
+            Key::Char('.') => app.forward_timer(60),
             _ => {}
         }
 

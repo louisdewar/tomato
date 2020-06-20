@@ -30,6 +30,18 @@ Tested on mac os, should work fine on Linux, windows support is untested (probab
 
 `l` -> If on short break, it becomes a long break
 
+`-` -> rewind timer by 1 second
+
+`=` -> forward timer by 1 second
+
+`[` -> rewind timer by 5 second
+
+`]` -> forward timer by 5 second
+
+`,` -> rewind timer by 60 second
+
+`.` -> forward timer by 60 second
+
 ## Config
 
 It is possible to configure the timer to whatever suits your personal needs.

@@ -1,7 +1,7 @@
 use crate::config::Config;
 
 use std::sync::Arc;
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
 
 mod timer;
 use self::timer::{State, Timer};
@@ -76,7 +76,7 @@ impl App {
     }
 
     pub fn is_paused(&self) -> bool {
-        self.timer.is_paused
+        self.timer.is_paused()
     }
 
     // Returns minutes and seconds
@@ -106,7 +106,7 @@ impl App {
         }
     }
 
-    pub fn transition_to_next_state(&mut self, last_finished: SystemTime) {
+    pub fn transition_to_next_state(&mut self, last_finished: Duration) {
         let next_state = match self.state {
             AppState::LongBreak(_) | AppState::ShortBreak => AppState::Work,
             AppState::Work => {
@@ -123,7 +123,7 @@ impl App {
         self.transition_to_state(next_state, last_finished);
     }
 
-    pub fn transition_to_prev_state(&mut self, last_finished: SystemTime) {
+    pub fn transition_to_prev_state(&mut self, last_finished: Duration) {
         let next_state = if self.pomodoros == 0 {
             // Don't keep subtracting pomodoros, there are no more states to transition between
             AppState::Work
@@ -149,21 +149,27 @@ impl App {
 
     /// Resets timer to 0 (same target duration)
     pub fn reset_timer(&mut self, paused: bool) {
-        self.timer = Timer::new(self.timer.target_duration, paused)
+        self.timer.reset(paused);
     }
 
-    pub fn transition_to_state(&mut self, next_state: AppState, last_finished: SystemTime) {
+    pub fn forward_timer(&mut self, delta_secs: u64) {
+        self.timer.forward_timer(Duration::from_secs(delta_secs));
+    }
+
+    /// Rewinds the timer without transitioning to a previous state
+    pub fn rewind_timer(&mut self, delta_secs: u64) {
+        self.timer.rewind_timer(Duration::from_secs(delta_secs));
+    }
+
+    pub fn transition_to_state(&mut self, next_state: AppState, elapsed_duration: Duration) {
         let time = match next_state {
             AppState::LongBreak(_) => self.settings.long_break_time,
             AppState::ShortBreak => self.settings.short_break_time,
             AppState::Work => self.settings.work_time,
         };
 
-        self.timer = Timer::new_with_acc_duration(
-            Duration::from_secs(time),
-            false,
-            last_finished.elapsed().expect("SystemTime::elapsed failed"),
-        );
+        self.timer =
+            Timer::new_with_acc_duration(Duration::from_secs(time), false, elapsed_duration);
         self.state = next_state;
     }
 
@@ -179,21 +185,24 @@ impl App {
         &self.state
     }
 
+    fn update_progress_data(&mut self) {
+        let (progress, time_elapsed, time_left) = self.timer.get_progress_data();
+
+        self.progress = progress;
+
+        let seconds_elapsed = time_elapsed.as_secs();
+        self.time_elapsed = (seconds_elapsed / 60, seconds_elapsed % 60);
+
+        let seconds_left = time_left.as_secs();
+        self.time_left = (seconds_left / 60, seconds_left % 60);
+    }
+
     pub fn update<F>(&mut self, on_new_state: &F)
     where
-        F: Fn(&AppState) -> (),
+        F: Fn(&AppState),
     {
         match self.timer.get_state() {
-            State::Paused => self.timer.is_paused = true,
-            State::Running(progress, time_elapsed, time_left) => {
-                self.progress = progress;
-
-                let seconds_elapsed = time_elapsed.as_secs();
-                self.time_elapsed = (seconds_elapsed / 60, seconds_elapsed % 60);
-
-                let seconds_left = time_left.as_secs();
-                self.time_left = (seconds_left / 60, seconds_left % 60);
-            }
+            State::Paused | State::Running => self.update_progress_data(),
             State::Finished(last_finished) => {
                 // All timing is state based so by using the last_finished & the recursive
                 // calling of update, any lag won't cause issues with the correctness of the timer

@@ -1,17 +1,14 @@
 use std::io;
 
 use tui::layout::Rect;
-use tui::{backend::TermionBackend, Terminal};
+use tui::Terminal;
 
-use termion::{
-    input::MouseTerminal,
-    raw::{IntoRawMode, RawTerminal},
-    screen::AlternateScreen,
-};
+use crossterm::{terminal, ExecutableCommand};
+use tui::backend::CrosstermBackend;
 
 use crate::app::App;
 
-pub type BackendType = TermionBackend<AlternateScreen<MouseTerminal<RawTerminal<std::io::Stdout>>>>;
+pub type BackendType = CrosstermBackend<std::io::Stdout>;
 
 pub struct Ui {
     terminal: Terminal<BackendType>,
@@ -19,13 +16,13 @@ pub struct Ui {
 }
 
 impl Ui {
-    pub fn new_with_termion() -> Result<Ui, io::Error> {
+    pub fn new_with_termion() -> Result<Ui, crossterm::ErrorKind> {
         // Terminal initialization
-        let stdout = io::stdout().into_raw_mode()?;
-        let stdout = MouseTerminal::from(stdout);
-        let stdout = AlternateScreen::from(stdout);
+        let mut stdout = io::stdout();
+        terminal::enable_raw_mode()?;
+        stdout.execute(terminal::EnterAlternateScreen)?;
 
-        let backend = TermionBackend::new(stdout);
+        let backend = CrosstermBackend::new(stdout);
 
         let mut terminal = Terminal::new(backend)?;
         terminal.hide_cursor()?;
@@ -85,4 +82,11 @@ impl Ui {
 
         Ok(())
     }
+}
+
+pub fn cleanup() {
+    terminal::disable_raw_mode().unwrap();
+    io::stdout()
+        .execute(terminal::LeaveAlternateScreen)
+        .unwrap();
 }

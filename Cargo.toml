@@ -1,12 +1,13 @@
 [package]
 name = "tomato"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["Louis de Wardt <contact@louis.dewardt.uk>"]
 edition = "2018"
 
 [dependencies]
-tui = "0.8"
+tui = { version = "0.8", default-features = false, features = ['crossterm'] }
 failure = "0.1.5"
-termion = "1.5"
+crossterm = "0.17"
 dirs = "1.0.5"
 clap = { version = "2.33", features = ["yaml"] }
+better-panic = "0.2.0"
