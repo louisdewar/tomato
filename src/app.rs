@@ -71,7 +71,7 @@ impl App {
         }
     }
 
-    pub fn get_progress(&self) -> f64 {
+    pub fn progress(&self) -> f64 {
         self.progress
     }
 
@@ -79,17 +79,38 @@ impl App {
         self.timer.is_paused()
     }
 
-    // Returns minutes and seconds
-    pub fn get_time_left(&self) -> (u64, u64) {
+    /// Returns minutes and seconds
+    pub fn time_left(&self) -> (u64, u64) {
         self.time_left
     }
 
-    pub fn get_time_elapsed(&self) -> (u64, u64) {
+    /// Returns minutes and seconds
+    pub fn time_elapsed(&self) -> (u64, u64) {
         self.time_elapsed
     }
 
-    pub fn get_pomodoros(&self) -> u64 {
+    pub fn pomodoros(&self) -> u64 {
         self.pomodoros
+    }
+
+    /// Returns `(hours, minutes)` of total work time including all previous sessions and the
+    /// current running time.
+    /// This is entirely based on the number of pomodoros + current running time so if the user has
+    /// skipped through a work session it will still count as the total time (this is the intended
+    /// behaviour).
+    pub fn total_work_time(&self) -> (u64, u64) {
+        let historic_minutes = (self.pomodoros() * self.settings.work_time) / 60;
+        let (running_minutes, running_seconds) = if self.get_state() == &AppState::Work {
+            self.time_elapsed()
+        } else {
+            (0, 0)
+        };
+
+        let total_minutes = historic_minutes + running_minutes + (running_seconds / 60);
+        let hours = total_minutes / 60;
+        let minutes = total_minutes % 60;
+
+        (hours, minutes)
     }
 
     pub fn get_state_name(&self) -> &'static str {
@@ -129,15 +150,16 @@ impl App {
             AppState::Work
         } else {
             match self.state {
-                AppState::LongBreak(_) | AppState::ShortBreak => AppState::Work,
+                AppState::LongBreak(_) | AppState::ShortBreak => {
+                    self.pomodoros -= 1;
+                    AppState::Work
+                }
                 AppState::Work => {
                     let state = if self.pomodoros % self.settings.pomodoros_before_long_break == 0 {
                         AppState::LongBreak(false)
                     } else {
                         AppState::ShortBreak
                     };
-
-                    self.pomodoros -= 1;
 
                     state
                 }

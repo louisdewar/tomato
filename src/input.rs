@@ -36,7 +36,7 @@ impl InputManager {
                 );
             }
             Key::Left => {
-                let (minutes, seconds) = app.get_time_elapsed();
+                let (minutes, seconds) = app.time_elapsed();
 
                 if minutes == 0 && seconds < 2 {
                     app.transition_to_prev_state(std::time::Duration::new(0, 0));

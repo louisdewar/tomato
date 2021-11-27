@@ -34,7 +34,7 @@ fn main() -> Result<(), failure::Error> {
         .get_matches();
 
     // Setup event handlers
-    let events = Events::new(250);
+    let events = Events::new(400);
 
     use std::path::PathBuf;
 
@@ -53,7 +53,7 @@ fn main() -> Result<(), failure::Error> {
                     // Silently try to get a default config file
                     .and_then(|path| Config::new_from_config_file(path).ok())
             })
-            // If default oconfig file couldn't be found then silently just use an empty one
+            // If default config file couldn't be found then silently just use an empty one
             .unwrap_or_else(Config::new),
     );
 
@@ -83,6 +83,14 @@ fn main() -> Result<(), failure::Error> {
     }
 
     ui::cleanup();
+
+    let (total_hours, total_mins) = app.total_work_time();
+    println!(
+        "{} pomodoros complete with {}h{}m of total work",
+        app.pomodoros(),
+        total_hours,
+        total_mins
+    );
 
     Ok(())
 }

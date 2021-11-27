@@ -54,16 +54,19 @@ impl Ui {
                 .constraints([Constraint::Length(14), Constraint::Min(0)].as_ref())
                 .split(size);
 
-            let time_left = app.get_time_left();
+            let time_left = app.time_left();
 
-            let percent_progress = (app.get_progress() * 100.0).round() as u16;
+            let percent_progress = (app.progress() * 100.0).round() as u16;
+            let total_work_time = app.total_work_time();
 
             Gauge::default()
                 .block(
                     Block::default()
                         .title(&format!(
-                            " Timer ({} pomodoros) - {} ",
-                            app.get_pomodoros(),
+                            " Timer - {} pomodoros complete - {}h{}m of work - {} ",
+                            app.pomodoros(),
+                            total_work_time.0,
+                            total_work_time.1,
                             app.get_state_name()
                         ))
                         .borders(Borders::ALL),
